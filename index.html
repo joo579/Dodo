@@ -81,6 +81,7 @@
             display: block;
             margin-bottom: 5px;
             font-weight: 600;
+            text-align: center; /* Centrer le texte des labels */
         }
 
         /* Styles spécifiques pour centrer et redimensionner les inputs */
@@ -101,6 +102,7 @@
             -webkit-appearance: none;
             -moz-appearance: none;
             font-family: inherit;
+            text-align: center; /* Centrer le texte dans les inputs */
         }
 
         /* Largeur pour le nom de l'objet et le prix */
@@ -128,6 +130,7 @@
             border-radius: 10px;
             margin-bottom: 10px;
             box-shadow: 4px 4px 8px var(--dark-shadow), -4px -4px 8px var(--light-shadow);
+            text-align: left; /* Assure que le texte de la transaction reste aligné à gauche */
         }
         
         .positive {
@@ -221,7 +224,7 @@
                         <option value="1000">1000</option>
                     </select>
 
-                    <label for="prix-achat">Prix d'achat unitaire (Kamas) :</label>
+                    <label for="prix-achat">Prix total d'achat (Kamas) :</label>
                     <input type="number" id="prix-achat" name="prix" required>
                 </div>
                 <button type="submit" class="neuf-button">Enregistrer l'achat</button>
@@ -248,7 +251,7 @@
                         <option value="1000">1000</option>
                     </select>
 
-                    <label for="prix-revente">Prix de revente unitaire (Kamas) :</label>
+                    <label for="prix-revente">Prix total de revente (Kamas) :</label>
                     <input type="number" id="prix-revente" name="prix" required>
                 </div>
                 <button type="submit" class="neuf-button">Enregistrer la revente</button>
@@ -318,12 +321,12 @@
             let totalAchats = 0;
             let totalVentes = 0;
 
-            achats.forEach(item => totalAchats += item.quantite * item.prix);
-            reventes.forEach(item => totalVentes += item.quantite * item.prix);
+            // Maintenant, item.prix est le prix total pour la transaction
+            achats.forEach(item => totalAchats += item.prix);
+            reventes.forEach(item => totalVentes += item.prix);
 
             const benefice = totalVentes - totalAchats;
 
-            // Affichage des totaux en Kamas (plus de "K" qui signifie milliers)
             document.getElementById('total-achats').textContent = totalAchats.toLocaleString('fr-FR');
             document.getElementById('total-ventes').textContent = totalVentes.toLocaleString('fr-FR');
             const beneficeElement = document.getElementById('benefice').querySelector('span');
@@ -345,7 +348,8 @@
 
             allTransactions.forEach(transaction => {
                 const li = document.createElement('li');
-                li.innerHTML = `<strong>${transaction.type} :</strong> ${transaction.quantite}x ${transaction.objet} pour ${(transaction.quantite * transaction.prix).toLocaleString('fr-FR')} Kamas`;
+                // Afficher le prix total de la transaction directement
+                li.innerHTML = `<strong>${transaction.type} :</strong> ${transaction.quantite}x ${transaction.objet} pour ${transaction.prix.toLocaleString('fr-FR')} Kamas`;
                 transactionList.appendChild(li);
             });
         }
@@ -375,12 +379,12 @@
             e.preventDefault();
             const objet = document.getElementById('objet-achat').value;
             const quantite = parseInt(document.getElementById('quantite-achat').value);
-            const prix = parseInt(document.getElementById('prix-achat').value); // Le prix est encodé directement
+            const prix = parseInt(document.getElementById('prix-achat').value); // Le prix est déjà le prix total
 
             const nouvelleTransaction = {
                 objet,
                 quantite,
-                prix,
+                prix, // Le prix est stocké comme le prix total pour cette quantité
                 date: new Date().toISOString()
             };
 
@@ -399,12 +403,12 @@
             e.preventDefault();
             const objet = document.getElementById('objet-revente').value;
             const quantite = parseInt(document.getElementById('quantite-revente').value);
-            const prix = parseInt(document.getElementById('prix-revente').value); // Le prix est encodé directement
+            const prix = parseInt(document.getElementById('prix-revente').value); // Le prix est déjà le prix total
 
             const nouvelleTransaction = {
                 objet,
                 quantite,
-                prix,
+                prix, // Le prix est stocké comme le prix total pour cette quantité
                 date: new Date().toISOString()
             };
 
