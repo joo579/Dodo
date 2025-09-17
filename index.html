@@ -118,6 +118,47 @@
         .negative {
             color: var(--negative);
         }
+
+        /* Styles pour les modales */
+        .modal-overlay {
+            display: none; /* Caché par défaut */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Fond semi-transparent */
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--dark-element);
+            border-radius: 20px;
+            box-shadow: 8px 8px 16px var(--dark-shadow), -8px -8px 16px var(--light-shadow);
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            position: relative; /* Pour le bouton de fermeture */
+            text-align: center;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            color: var(--text-color);
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-button:hover {
+            color: var(--light-shadow);
+        }
     </style>
 </head>
 <body>
@@ -142,85 +183,105 @@
         </nav>
     </div>
 
-    <div class="container" id="achat-view" style="display:none;">
-        <h1>Ajouter un achat</h1>
-        <form id="form-achat">
-            <div class="neuf-card">
-                <label for="objet-achat">Nom de l'objet :</label>
-                <input list="dofus-items" id="objet-achat" name="objet">
-                <datalist id="dofus-items"></datalist>
+    <!-- Modale pour ajouter un achat -->
+    <div id="achat-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-button" id="close-achat-modal">&times;</button>
+            <h1>Ajouter un achat</h1>
+            <form id="form-achat">
+                <div class="neuf-card">
+                    <label for="objet-achat">Nom de l'objet :</label>
+                    <input list="dofus-items" id="objet-achat" name="objet">
+                    <datalist id="dofus-items"></datalist>
 
-                <label for="quantite-achat">Quantité :</label>
-                <select id="quantite-achat" name="quantite">
-                    <option value="1">1</option>
-                    <option value="10">10</option>
-                    <option value="100">100</option>
-                    <option value="1000">1000</option>
-                </select>
+                    <label for="quantite-achat">Quantité :</label>
+                    <select id="quantite-achat" name="quantite">
+                        <option value="1">1</option>
+                        <option value="10">10</option>
+                        <option value="100">100</option>
+                        <option value="1000">1000</option>
+                    </select>
 
-                <label for="prix-achat">Prix d'achat unitaire (K) :</label>
-                <input type="number" id="prix-achat" name="prix" required>
-            </div>
-            <button type="submit" class="neuf-button">Enregistrer l'achat</button>
-        </form>
-        <button id="back-to-main-achat" class="neuf-button">Retour au bilan</button>
+                    <label for="prix-achat">Prix d'achat unitaire (K) :</label>
+                    <input type="number" id="prix-achat" name="prix" required>
+                </div>
+                <button type="submit" class="neuf-button">Enregistrer l'achat</button>
+            </form>
+        </div>
     </div>
 
-    <div class="container" id="revente-view" style="display:none;">
-        <h1>Ajouter une revente</h1>
-        <form id="form-revente">
-            <div class="neuf-card">
-                <label for="objet-revente">Nom de l'objet :</label>
-                <input list="dofus-items" id="objet-revente" name="objet">
-                <datalist id="dofus-items"></datalist>
-                
-                <label for="quantite-revente">Quantité :</label>
-                <select id="quantite-revente" name="quantite">
-                    <option value="1">1</option>
-                    <option value="10">10</option>
-                    <option value="100">100</option>
-                    <option value="1000">1000</option>
-                </select>
+    <!-- Modale pour ajouter une revente -->
+    <div id="revente-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-button" id="close-revente-modal">&times;</button>
+            <h1>Ajouter une revente</h1>
+            <form id="form-revente">
+                <div class="neuf-card">
+                    <label for="objet-revente">Nom de l'objet :</label>
+                    <input list="dofus-items" id="objet-revente" name="objet">
+                    <datalist id="dofus-items"></datalist>
+                    
+                    <label for="quantite-revente">Quantité :</label>
+                    <select id="quantite-revente" name="quantite">
+                        <option value="1">1</option>
+                        <option value="10">10</option>
+                        <option value="100">100</option>
+                        <option value="1000">1000</option>
+                    </select>
 
-                <label for="prix-revente">Prix de revente unitaire (K) :</label>
-                <input type="number" id="prix-revente" name="prix" required>
-            </div>
-            <button type="submit" class="neuf-button">Enregistrer la revente</button>
-        </form>
-        <button id="back-to-main-revente" class="neuf-button">Retour au bilan</button>
+                    <label for="prix-revente">Prix de revente unitaire (K) :</label>
+                    <input type="number" id="prix-revente" name="prix" required>
+                </div>
+                <button type="submit" class="neuf-button">Enregistrer la revente</button>
+            </form>
+        </div>
     </div>
 
     <script>
-        // JavaScript pour la logique de l'application
         const ACHATS_KEY = 'dofusAchats';
         const REVENTES_KEY = 'dofusReventes';
 
         const mainView = document.getElementById('main-view');
-        const achatView = document.getElementById('achat-view');
-        const reventeView = document.getElementById('revente-view');
+        const achatModal = document.getElementById('achat-modal');
+        const reventeModal = document.getElementById('revente-modal');
 
         const showAchatBtn = document.getElementById('show-achat');
         const showReventeBtn = document.getElementById('show-revente');
-        const backToMainAchatBtn = document.getElementById('back-to-main-achat');
-        const backToMainReventeBtn = document.getElementById('back-to-main-revente');
+        const closeAchatModalBtn = document.getElementById('close-achat-modal');
+        const closeReventeModalBtn = document.getElementById('close-revente-modal');
 
-        // Fonctions de navigation
-        function showView(view) {
-            mainView.style.display = 'none';
-            achatView.style.display = 'none';
-            reventeView.style.display = 'none';
-            view.style.display = 'block';
-            if (view === mainView) {
-                updateMainView();
-            }
+        // Fonctions pour gérer l'ouverture et la fermeture des modales
+        function showModal(modalElement) {
+            modalElement.style.display = 'flex'; // Utiliser flex pour centrer le contenu
         }
 
-        showAchatBtn.addEventListener('click', () => showView(achatView));
-        showReventeBtn.addEventListener('click', () => showView(reventeView));
-        backToMainAchatBtn.addEventListener('click', () => showView(mainView));
-        backToMainReventeBtn.addEventListener('click', () => showView(mainView));
+        function hideModal(modalElement) {
+            modalElement.style.display = 'none';
+            updateMainView(); // Mettre à jour la vue principale après fermeture de la modale
+        }
 
-        // Fonctions pour gérer le localStorage
+        // Événements pour ouvrir les modales
+        showAchatBtn.addEventListener('click', () => showModal(achatModal));
+        showReventeBtn.addEventListener('click', () => showModal(reventeModal));
+
+        // Événements pour fermer les modales via le bouton "x"
+        closeAchatModalBtn.addEventListener('click', () => hideModal(achatModal));
+        closeReventeModalBtn.addEventListener('click', () => hideModal(reventeModal));
+
+        // Événements pour fermer les modales en cliquant en dehors du contenu
+        achatModal.addEventListener('click', (e) => {
+            if (e.target === achatModal) {
+                hideModal(achatModal);
+            }
+        });
+        reventeModal.addEventListener('click', (e) => {
+            if (e.target === reventeModal) {
+                hideModal(reventeModal);
+            }
+        });
+
+
+        // Fonctions pour gérer le localStorage (aucune modification ici)
         function getTransactions(key) {
             const data = localStorage.getItem(key);
             return data ? JSON.parse(data) : [];
@@ -230,7 +291,7 @@
             localStorage.setItem(key, JSON.stringify(data));
         }
 
-        // Fonction pour mettre à jour l'affichage de la page principale
+        // Fonction pour mettre à jour l'affichage de la page principale (aucune modification ici)
         function updateMainView() {
             const achats = getTransactions(ACHATS_KEY);
             const reventes = getTransactions(REVENTES_KEY);
@@ -257,7 +318,7 @@
             }
 
             const transactionList = document.getElementById('transaction-list');
-            transactionList.innerHTML = ''; // Nettoyer la liste avant d'ajouter les éléments
+            transactionList.innerHTML = ''; 
 
             const allTransactions = [...achats.map(t => ({...t, type: 'Achat'})), ...reventes.map(t => ({...t, type: 'Revente'}))];
             allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -269,7 +330,7 @@
             });
         }
 
-        // Chargement initial des objets Dofus Touch
+        // Chargement initial des objets Dofus Touch (aucune modification ici)
         async function loadDofusItems() {
             try {
                 const response = await fetch('https://fr.touch.dofapi.fr/items');
@@ -309,7 +370,7 @@
 
             alert('Achat enregistré !');
             formAchat.reset();
-            showView(mainView);
+            hideModal(achatModal); // Ferme la modale d'achat
         });
 
         // Gestion du formulaire de revente
@@ -333,7 +394,7 @@
 
             alert('Revente enregistrée !');
             formRevente.reset();
-            showView(mainView);
+            hideModal(reventeModal); // Ferme la modale de revente
         });
 
         // Initialisation de l'application
