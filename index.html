@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dofus Farm Tracker</title>
+    <!-- Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         /* CSS pour le design Neumorphism sombre */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
@@ -31,6 +33,7 @@
             flex-direction: column;
             min-height: 100vh;
             padding: 20px;
+            padding-bottom: 70px; /* Ajoute un padding pour que le contenu ne soit pas caché par la nav bar */
         }
 
         .container {
@@ -118,7 +121,6 @@
         select#quantite-achat,
         select#quantite-revente {
             width: 25%;
-            /* Ajustement pour le centrage vertical du texte dans le select */
             line-height: 1.5; /* Ajustez si nécessaire pour un meilleur centrage */
         }
         /* Fin des styles spécifiques */
@@ -235,7 +237,7 @@
 
         .keypad-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 colonnes fixes */
+            grid-template-columns: repeat(3, 1fr);
             gap: 15px;
             margin-bottom: 20px;
         }
@@ -259,6 +261,46 @@
 
         .keypad-button:active {
             box-shadow: inset 4px 4px 8px var(--keypad-button-shadow-dark), inset -4px -4px 8px var(--keypad-button-shadow-light);
+        }
+
+        /* Styles pour la barre de navigation du bas */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--dark-element);
+            box-shadow: 0 -8px 16px var(--dark-shadow), 0 8px 16px var(--light-shadow); /* Ombre sur le dessus */
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            z-index: 999; /* Assure qu'elle est au-dessus du contenu mais en dessous des modales */
+        }
+
+        .nav-button {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5px 10px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            text-decoration: none; /* Enlève le soulignement si c'est un lien */
+        }
+
+        .nav-button i {
+            font-size: 1.5em; /* Taille de l'icône */
+            margin-bottom: 5px;
+        }
+
+        .nav-button:hover, .nav-button.active {
+            color: var(--light-shadow); /* Couleur plus claire au survol et pour l'état actif */
         }
     </style>
 </head>
@@ -368,6 +410,18 @@
         </div>
     </div>
 
+    <!-- Nouvelle barre de navigation du bas -->
+    <nav class="bottom-nav">
+        <button class="nav-button" id="nav-accueil">
+            <i class="fas fa-home"></i>
+            <span>Accueil</span>
+        </button>
+        <button class="nav-button" id="nav-historique">
+            <i class="fas fa-chart-line"></i>
+            <span>Historique</span>
+        </button>
+    </nav>
+
     <script>
         const ACHATS_KEY = 'dofusAchats';
         const REVENTES_KEY = 'dofusReventes';
@@ -388,8 +442,11 @@
         const prixAchatInput = document.getElementById('prix-achat');
         const prixReventeInput = document.getElementById('prix-revente');
         const keypadValueDisplay = document.getElementById('keypad-value-display');
-        // Cibler tous les boutons de la grille, y compris le retour arrière et la virgule
         const keypadButtons = document.querySelectorAll('.keypad-grid .keypad-button'); 
+
+        // Nouveaux éléments de navigation
+        const navAccueilBtn = document.getElementById('nav-accueil');
+        const navHistoriqueBtn = document.getElementById('nav-historique');
 
         let currentKeypadValue = ''; 
         let activePriceInput = null;
@@ -401,9 +458,19 @@
 
         function hideModal(modalElement) {
             modalElement.style.display = 'none';
+            // On ne met à jour la vue principale que si ce n'est pas le clavier qui se ferme
             if (modalElement !== keypadModal) {
                 updateMainView();
             }
+        }
+
+        // Fonction pour afficher la vue principale et cacher les modales
+        function showMainView() {
+            hideModal(achatModal);
+            hideModal(reventeModal);
+            hideModal(keypadModal); // S'assurer que le clavier est fermé
+            mainView.style.display = 'block';
+            updateMainView();
         }
 
         // --- Logique du clavier numérique ---
@@ -473,15 +540,15 @@
         });
         // --- Fin Logique du clavier numérique ---
 
-        // Événements pour ouvrir les modales d'achat/revente
+        // Événements pour ouvrir les modales d'achat/revente (inchangé)
         showAchatBtn.addEventListener('click', () => showModal(achatModal));
         showReventeBtn.addEventListener('click', () => showModal(reventeModal));
 
-        // Événements pour fermer les modales via le bouton "x"
+        // Événements pour fermer les modales via le bouton "x" (inchangé)
         closeAchatModalBtn.addEventListener('click', () => hideModal(achatModal));
         closeReventeModalBtn.addEventListener('click', () => hideModal(reventeModal));
 
-        // Événements pour fermer les modales en cliquant en dehors du contenu
+        // Événements pour fermer les modales en cliquant en dehors du contenu (inchangé)
         achatModal.addEventListener('click', (e) => {
             if (e.target === achatModal) {
                 hideModal(achatModal);
@@ -498,8 +565,29 @@
             }
         });
 
+        // --- Logique de la barre de navigation du bas ---
+        navAccueilBtn.addEventListener('click', () => {
+            showMainView();
+            // Optionnel: ajouter une classe 'active' pour styliser le bouton sélectionné
+            navAccueilBtn.classList.add('active');
+            navHistoriqueBtn.classList.remove('active');
+        });
 
-        // Fonctions pour gérer le localStorage
+        navHistoriqueBtn.addEventListener('click', () => {
+            showMainView();
+            // Optionnel: défiler jusqu'à la section historique
+            const transactionListSection = document.getElementById('transaction-list').closest('.neuf-card');
+            if (transactionListSection) {
+                transactionListSection.scrollIntoView({ behavior: 'smooth' });
+            }
+            // Optionnel: ajouter une classe 'active' pour styliser le bouton sélectionné
+            navHistoriqueBtn.classList.add('active');
+            navAccueilBtn.classList.remove('active');
+        });
+        // --- Fin Logique de la barre de navigation du bas ---
+
+
+        // Fonctions pour gérer le localStorage (inchangé)
         function getTransactions(key) {
             const data = localStorage.getItem(key);
             return data ? JSON.parse(data) : [];
@@ -509,7 +597,7 @@
             localStorage.setItem(key, JSON.stringify(data));
         }
 
-        // Fonction pour mettre à jour l'affichage de la page principale
+        // Fonction pour mettre à jour l'affichage de la page principale (inchangé)
         function updateMainView() {
             const achats = getTransactions(ACHATS_KEY);
             const reventes = getTransactions(REVENTES_KEY);
@@ -548,7 +636,7 @@
             });
         }
 
-        // Chargement initial des objets Dofus Touch
+        // Chargement initial des objets Dofus Touch (inchangé)
         async function loadDofusItems() {
             try {
                 const response = await fetch('https://fr.touch.dofapi.fr/items');
@@ -567,7 +655,7 @@
             }
         }
 
-        // Gestion du formulaire d'achat
+        // Gestion du formulaire d'achat (inchangé)
         const formAchat = document.getElementById('form-achat');
         formAchat.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -596,7 +684,7 @@
             hideModal(achatModal); 
         });
 
-        // Gestion du formulaire de revente
+        // Gestion du formulaire de revente (inchangé)
         const formRevente = document.getElementById('form-revente');
         formRevente.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -629,6 +717,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadDofusItems();
             updateMainView();
+            // Initialiser le bouton "Accueil" comme actif
+            navAccueilBtn.classList.add('active');
         });
     </script>
 </body>
