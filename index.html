@@ -199,35 +199,34 @@
             padding: 15px;
             margin-bottom: 20px;
             font-size: 2em;
-            text-align: right; /* Par défaut aligné à droite */
             box-shadow: inset 4px 4px 8px var(--dark-shadow), inset -4px -4px 8px var(--light-shadow);
-            min-height: 2em; /* Pour éviter le redimensionnement */
-            display: flex; /* Utilisation de flex pour aligner le bouton 'C' et le texte */
-            align-items: center; /* Centrage vertical */
-            justify-content: space-between; /* Espace entre le bouton 'C' et la valeur */
-            overflow: hidden; /* Cache le texte qui dépasse */
+            min-height: 2em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
         }
 
         #keypad-value-display {
-            flex-grow: 1; /* Permet à la valeur de prendre l'espace restant */
-            text-align: right; /* Assure que le texte numérique est aligné à droite */
-            word-break: break-all; /* Gère les très longs nombres */
-            text-overflow: ellipsis; /* Ajoute des points de suspension si le texte déborde */
+            flex-grow: 1;
+            text-align: right;
+            word-break: break-all;
+            text-overflow: ellipsis;
         }
 
         .keypad-clear-display-button {
-            background-color: var(--dark-element); /* Couleur de fond pour le bouton C */
+            background-color: var(--dark-element);
             color: var(--text-color);
             border: none;
             border-radius: 10px;
             padding: 8px 15px;
-            margin-right: 10px; /* Espace entre le bouton C et la valeur */
-            font-size: 0.8em; /* Plus petit que la valeur */
+            margin-right: 10px;
+            font-size: 0.8em;
             font-weight: 600;
             cursor: pointer;
             box-shadow: 4px 4px 8px var(--dark-shadow), -4px -4px 8px var(--light-shadow);
             transition: all 0.2s ease;
-            flex-shrink: 0; /* Empêche le bouton de rétrécir */
+            flex-shrink: 0;
         }
 
         .keypad-clear-display-button:hover {
@@ -236,7 +235,7 @@
 
         .keypad-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 colonnes pour les chiffres */
+            grid-template-columns: repeat(3, 1fr); /* 3 colonnes fixes */
             gap: 15px;
             margin-bottom: 20px;
         }
@@ -260,17 +259,6 @@
 
         .keypad-button:active {
             box-shadow: inset 4px 4px 8px var(--keypad-button-shadow-dark), inset -4px -4px 8px var(--keypad-button-shadow-light);
-        }
-
-        .keypad-actions {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px; /* Espace entre les boutons d'action */
-        }
-        
-        .keypad-actions .neuf-button {
-            flex-grow: 1; /* Permet aux boutons de prendre la même largeur */
-            margin: 0; /* Supprime les marges par défaut */
         }
     </style>
 </head>
@@ -360,23 +348,23 @@
                 <span id="keypad-value-display">0</span>
             </div>
             <div class="keypad-grid">
-                <button class="keypad-button" data-value="7">7</button>
-                <button class="keypad-button" data-value="8">8</button>
-                <button class="keypad-button" data-value="9">9</button>
-                <button class="keypad-button" data-value="4">4</button>
-                <button class="keypad-button" data-value="5">5</button>
-                <button class="keypad-button" data-value="6">6</button>
                 <button class="keypad-button" data-value="1">1</button>
                 <button class="keypad-button" data-value="2">2</button>
                 <button class="keypad-button" data-value="3">3</button>
+
+                <button class="keypad-button" data-value="4">4</button>
+                <button class="keypad-button" data-value="5">5</button>
+                <button class="keypad-button" data-value="6">6</button>
+
+                <button class="keypad-button" data-value="7">7</button>
+                <button class="keypad-button" data-value="8">8</button>
+                <button class="keypad-button" data-value="9">9</button>
+
+                <button class="keypad-button" data-value=".">,</button> <!-- Virgule -->
                 <button class="keypad-button" data-value="0">0</button>
-                <button class="keypad-button" data-value="00">00</button> <!-- Ajout d'un bouton 00 pour plus de commodité -->
-                <button class="keypad-button" data-value=".">,</button> <!-- Virgule décimale -->
+                <button class="keypad-button" data-action="backspace">&larr;</button> <!-- Retour arrière -->
             </div>
-            <div class="keypad-actions">
-                <button class="neuf-button" id="keypad-backspace-btn">&larr;</button>
-                <button class="neuf-button" id="confirm-price">Confirmer</button>
-            </div>
+            <button class="neuf-button" id="confirm-price">Confirmer</button>
         </div>
     </div>
 
@@ -395,15 +383,15 @@
         const closeReventeModalBtn = document.getElementById('close-revente-modal');
         const closeKeypadModalBtn = document.getElementById('close-keypad-modal');
         const confirmPriceBtn = document.getElementById('confirm-price');
-        const keypadBackspaceBtn = document.getElementById('keypad-backspace-btn');
-        const keypadClearDisplayBtn = document.getElementById('keypad-clear-display-btn'); // Nouveau bouton 'C'
+        const keypadClearDisplayBtn = document.getElementById('keypad-clear-display-btn');
 
         const prixAchatInput = document.getElementById('prix-achat');
         const prixReventeInput = document.getElementById('prix-revente');
-        const keypadValueDisplay = document.getElementById('keypad-value-display'); // Le span pour la valeur
-        const keypadButtons = document.querySelectorAll('.keypad-grid .keypad-button'); // Cibler seulement les boutons de la grille
+        const keypadValueDisplay = document.getElementById('keypad-value-display');
+        // Cibler tous les boutons de la grille, y compris le retour arrière et la virgule
+        const keypadButtons = document.querySelectorAll('.keypad-grid .keypad-button'); 
 
-        let currentKeypadValue = ''; // Stocke la valeur comme une chaîne de caractères (avec un point pour décimales)
+        let currentKeypadValue = ''; 
         let activePriceInput = null;
 
         // Fonctions pour gérer l'ouverture et la fermeture des modales
@@ -420,15 +408,17 @@
 
         // --- Logique du clavier numérique ---
         function updateKeypadDisplay() {
-            // Affiche la valeur ou '0' si vide, en remplaçant le point par une virgule pour l'affichage
             keypadValueDisplay.textContent = currentKeypadValue === '' ? '0' : currentKeypadValue.replace('.', ',');
         }
 
         keypadButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const value = button.dataset.value;
+                const action = button.dataset.action;
 
-                if (value === '.') { // Gérer la virgule décimale
+                if (action === 'backspace') {
+                    currentKeypadValue = currentKeypadValue.slice(0, -1);
+                } else if (value === '.') { // Gérer la virgule décimale
                     if (!currentKeypadValue.includes('.')) {
                         if (currentKeypadValue === '') {
                             currentKeypadValue = '0.';
@@ -436,16 +426,10 @@
                             currentKeypadValue += value;
                         }
                     }
-                } else if (value === '00') { // Gérer le bouton '00'
-                    if (currentKeypadValue !== '0' && currentKeypadValue.length < 15) {
-                        currentKeypadValue += '00';
-                    } else if (currentKeypadValue === '') {
-                        currentKeypadValue = '0'; // Si vide, ajouter juste un 0
-                    }
                 } else { // Gérer les chiffres
-                    if (currentKeypadValue.length < 15) { // Limiter la longueur du nombre
-                        if (currentKeypadValue === '0') {
-                            currentKeypadValue = value; // Remplace '0' initial
+                    if (currentKeypadValue.length < 15) { 
+                        if (currentKeypadValue === '0' && value !== '.') {
+                            currentKeypadValue = value; 
                         } else {
                             currentKeypadValue += value;
                         }
@@ -461,17 +445,10 @@
             updateKeypadDisplay();
         });
 
-        // Gérer le bouton retour arrière indépendant
-        keypadBackspaceBtn.addEventListener('click', () => {
-            currentKeypadValue = currentKeypadValue.slice(0, -1);
-            updateKeypadDisplay();
-        });
-
         confirmPriceBtn.addEventListener('click', () => {
             if (activePriceInput) {
-                // S'assurer qu'un nombre valide est retourné, même si le champ est vide
                 const finalValue = parseFloat(currentKeypadValue || '0');
-                activePriceInput.value = isNaN(finalValue) ? '' : finalValue; // Stocke le nombre pur
+                activePriceInput.value = isNaN(finalValue) ? '' : finalValue; 
                 hideModal(keypadModal);
             }
         });
@@ -483,7 +460,6 @@
         // Événements pour ouvrir le clavier en cliquant sur le champ de prix
         prixAchatInput.addEventListener('click', () => {
             activePriceInput = prixAchatInput;
-            // Pré-remplir avec la valeur existante, en convertissant la virgule en point pour la logique interne
             currentKeypadValue = prixAchatInput.value.toString().replace(',', '.') || '';
             updateKeypadDisplay();
             showModal(keypadModal);
@@ -491,7 +467,6 @@
 
         prixReventeInput.addEventListener('click', () => {
             activePriceInput = prixReventeInput;
-            // Pré-remplir avec la valeur existante, en convertissant la virgule en point pour la logique interne
             currentKeypadValue = prixReventeInput.value.toString().replace(',', '.') || '';
             updateKeypadDisplay();
             showModal(keypadModal);
