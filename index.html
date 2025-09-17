@@ -16,6 +16,9 @@
             --text-color: #f0f0f0;
             --positive: #4CAF50; /* Vert pour les bénéfices */
             --negative: #F44336; /* Rouge pour les pertes */
+            --keypad-button-bg: #3A3A3A;
+            --keypad-button-shadow-light: #4c4c4c;
+            --keypad-button-shadow-dark: #2c2c2c;
         }
 
         body {
@@ -84,7 +87,7 @@
             text-align: center; /* Centrer le texte des labels */
         }
 
-        /* Styles spécifiques pour centrer et redimensionner les inputs */
+        /* Styles spécifiques pour centrer et redimensionner les inputs et selects */
         input[list="dofus-items"],
         input[type="number"],
         select {
@@ -98,11 +101,11 @@
             border: none;
             border-radius: 10px;
             box-shadow: inset 4px 4px 8px var(--dark-shadow), inset -4px -4px 8px var(--light-shadow);
-            appearance: none;
+            appearance: none; /* Supprime le style natif du navigateur */
             -webkit-appearance: none;
             -moz-appearance: none;
             font-family: inherit;
-            text-align: center; /* Centrer le texte dans les inputs */
+            text-align: center; /* Centrer le texte dans les inputs et selects */
         }
 
         /* Largeur pour le nom de l'objet et le prix */
@@ -115,9 +118,10 @@
         select#quantite-achat,
         select#quantite-revente {
             width: 25%;
+            /* Ajustement pour le centrage vertical du texte dans le select */
+            line-height: 1.5; /* Ajustez si nécessaire pour un meilleur centrage */
         }
         /* Fin des styles spécifiques */
-
 
         #transaction-list {
             list-style: none;
@@ -141,7 +145,7 @@
             color: var(--negative);
         }
 
-        /* Styles pour les modales */
+        /* Styles pour les modales générales */
         .modal-overlay {
             display: none; /* Caché par défaut */
             position: fixed;
@@ -180,6 +184,60 @@
 
         .close-button:hover {
             color: var(--light-shadow);
+        }
+
+        /* Styles spécifiques pour le clavier numérique (Keypad Modal) */
+        .keypad-modal .modal-content {
+            max-width: 400px; /* Plus petit pour le clavier */
+            padding: 20px;
+        }
+
+        #keypad-display {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 2em;
+            text-align: right;
+            box-shadow: inset 4px 4px 8px var(--dark-shadow), inset -4px -4px 8px var(--light-shadow);
+            min-height: 2em; /* Pour éviter le redimensionnement */
+        }
+
+        .keypad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .keypad-button {
+            background-color: var(--keypad-button-bg);
+            color: var(--text-color);
+            border: none;
+            border-radius: 15px;
+            padding: 20px 0;
+            font-size: 1.5em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 6px 6px 12px var(--keypad-button-shadow-dark), -6px -6px 12px var(--keypad-button-shadow-light);
+            transition: all 0.2s ease;
+        }
+
+        .keypad-button:hover {
+            box-shadow: inset 4px 4px 8px var(--keypad-button-shadow-dark), inset -4px -4px 8px var(--keypad-button-shadow-light);
+        }
+
+        .keypad-button:active {
+            box-shadow: inset 4px 4px 8px var(--keypad-button-shadow-dark), inset -4px -4px 8px var(--keypad-button-shadow-light);
+        }
+
+        .keypad-button.action-button {
+            background-color: var(--dark-element); /* Une couleur légèrement différente pour les actions */
+            box-shadow: 6px 6px 12px var(--dark-shadow), -6px -6px 12px var(--light-shadow);
+        }
+        .keypad-button.action-button:hover {
+             box-shadow: inset 4px 4px 8px var(--dark-shadow), inset -4px -4px 8px var(--light-shadow);
         }
     </style>
 </head>
@@ -225,7 +283,7 @@
                     </select>
 
                     <label for="prix-achat">Prix total d'achat (Kamas) :</label>
-                    <input type="number" id="prix-achat" name="prix" required>
+                    <input type="number" id="prix-achat" name="prix" required readonly>
                 </div>
                 <button type="submit" class="neuf-button">Enregistrer l'achat</button>
             </form>
@@ -252,10 +310,34 @@
                     </select>
 
                     <label for="prix-revente">Prix total de revente (Kamas) :</label>
-                    <input type="number" id="prix-revente" name="prix" required>
+                    <input type="number" id="prix-revente" name="prix" required readonly>
                 </div>
                 <button type="submit" class="neuf-button">Enregistrer la revente</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Modale pour le clavier numérique -->
+    <div id="keypad-modal" class="modal-overlay keypad-modal">
+        <div class="modal-content">
+            <button class="close-button" id="close-keypad-modal">&times;</button>
+            <h2>Saisir le prix</h2>
+            <div id="keypad-display">0</div>
+            <div class="keypad-grid">
+                <button class="keypad-button" data-value="7">7</button>
+                <button class="keypad-button" data-value="8">8</button>
+                <button class="keypad-button" data-value="9">9</button>
+                <button class="keypad-button" data-value="4">4</button>
+                <button class="keypad-button" data-value="5">5</button>
+                <button class="keypad-button" data-value="6">6</button>
+                <button class="keypad-button" data-value="1">1</button>
+                <button class="keypad-button" data-value="2">2</button>
+                <button class="keypad-button" data-value="3">3</button>
+                <button class="keypad-button action-button" data-action="clear">C</button>
+                <button class="keypad-button" data-value="0">0</button>
+                <button class="keypad-button action-button" data-action="backspace">&larr;</button>
+            </div>
+            <button class="neuf-button" id="confirm-price">Confirmer</button>
         </div>
     </div>
 
@@ -266,23 +348,94 @@
         const mainView = document.getElementById('main-view');
         const achatModal = document.getElementById('achat-modal');
         const reventeModal = document.getElementById('revente-modal');
+        const keypadModal = document.getElementById('keypad-modal'); // Nouvelle modale clavier
 
         const showAchatBtn = document.getElementById('show-achat');
         const showReventeBtn = document.getElementById('show-revente');
         const closeAchatModalBtn = document.getElementById('close-achat-modal');
         const closeReventeModalBtn = document.getElementById('close-revente-modal');
+        const closeKeypadModalBtn = document.getElementById('close-keypad-modal'); // Bouton fermeture clavier
+        const confirmPriceBtn = document.getElementById('confirm-price'); // Bouton confirmer clavier
+
+        const prixAchatInput = document.getElementById('prix-achat');
+        const prixReventeInput = document.getElementById('prix-revente');
+        const keypadDisplay = document.getElementById('keypad-display');
+        const keypadButtons = document.querySelectorAll('.keypad-button');
+
+        let currentKeypadValue = '';
+        let activePriceInput = null; // Pour savoir quel champ de prix est actif
 
         // Fonctions pour gérer l'ouverture et la fermeture des modales
         function showModal(modalElement) {
-            modalElement.style.display = 'flex'; // Utiliser flex pour centrer le contenu
+            modalElement.style.display = 'flex';
         }
 
         function hideModal(modalElement) {
             modalElement.style.display = 'none';
-            updateMainView(); // Mettre à jour la vue principale après fermeture de la modale
+            // Ne pas mettre à jour la vue principale si c'est le clavier qui se ferme
+            if (modalElement !== keypadModal) {
+                updateMainView();
+            }
         }
 
-        // Événements pour ouvrir les modales
+        // --- Logique du clavier numérique ---
+        function updateKeypadDisplay() {
+            keypadDisplay.textContent = currentKeypadValue === '' ? '0' : currentKeypadValue;
+        }
+
+        keypadButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const value = button.dataset.value;
+                const action = button.dataset.action;
+
+                if (value) {
+                    // Limiter la longueur pour éviter les nombres gigantesques
+                    if (currentKeypadValue.length < 15) {
+                        if (currentKeypadValue === '0' && value !== '.') { // Éviter "01", "00" etc.
+                            currentKeypadValue = value;
+                        } else {
+                            currentKeypadValue += value;
+                        }
+                    }
+                } else if (action === 'clear') {
+                    currentKeypadValue = '';
+                } else if (action === 'backspace') {
+                    currentKeypadValue = currentKeypadValue.slice(0, -1);
+                }
+                updateKeypadDisplay();
+            });
+        });
+
+        confirmPriceBtn.addEventListener('click', () => {
+            if (activePriceInput) {
+                // Valider le nombre et l'assigner au champ actif
+                const finalValue = parseFloat(currentKeypadValue || '0');
+                activePriceInput.value = isNaN(finalValue) ? '' : finalValue;
+                hideModal(keypadModal);
+            }
+        });
+
+        closeKeypadModalBtn.addEventListener('click', () => {
+            hideModal(keypadModal);
+        });
+
+        // Événements pour ouvrir le clavier en cliquant sur le champ de prix
+        prixAchatInput.addEventListener('click', () => {
+            activePriceInput = prixAchatInput;
+            currentKeypadValue = prixAchatInput.value || ''; // Pré-remplir avec la valeur existante
+            updateKeypadDisplay();
+            showModal(keypadModal);
+        });
+
+        prixReventeInput.addEventListener('click', () => {
+            activePriceInput = prixReventeInput;
+            currentKeypadValue = prixReventeInput.value || ''; // Pré-remplir avec la valeur existante
+            updateKeypadDisplay();
+            showModal(keypadModal);
+        });
+        // --- Fin Logique du clavier numérique ---
+
+        // Événements pour ouvrir les modales d'achat/revente
         showAchatBtn.addEventListener('click', () => showModal(achatModal));
         showReventeBtn.addEventListener('click', () => showModal(reventeModal));
 
@@ -299,6 +452,11 @@
         reventeModal.addEventListener('click', (e) => {
             if (e.target === reventeModal) {
                 hideModal(reventeModal);
+            }
+        });
+        keypadModal.addEventListener('click', (e) => {
+            if (e.target === keypadModal) {
+                hideModal(keypadModal);
             }
         });
 
@@ -321,7 +479,6 @@
             let totalAchats = 0;
             let totalVentes = 0;
 
-            // Maintenant, item.prix est le prix total pour la transaction
             achats.forEach(item => totalAchats += item.prix);
             reventes.forEach(item => totalVentes += item.prix);
 
@@ -348,7 +505,6 @@
 
             allTransactions.forEach(transaction => {
                 const li = document.createElement('li');
-                // Afficher le prix total de la transaction directement
                 li.innerHTML = `<strong>${transaction.type} :</strong> ${transaction.quantite}x ${transaction.objet} pour ${transaction.prix.toLocaleString('fr-FR')} Kamas`;
                 transactionList.appendChild(li);
             });
@@ -379,12 +535,17 @@
             e.preventDefault();
             const objet = document.getElementById('objet-achat').value;
             const quantite = parseInt(document.getElementById('quantite-achat').value);
-            const prix = parseInt(document.getElementById('prix-achat').value); // Le prix est déjà le prix total
+            const prix = parseInt(document.getElementById('prix-achat').value); 
+
+            if (isNaN(prix) || prix < 0) {
+                alert('Veuillez saisir un prix valide.');
+                return;
+            }
 
             const nouvelleTransaction = {
                 objet,
                 quantite,
-                prix, // Le prix est stocké comme le prix total pour cette quantité
+                prix,
                 date: new Date().toISOString()
             };
 
@@ -394,7 +555,7 @@
 
             alert('Achat enregistré !');
             formAchat.reset();
-            hideModal(achatModal); // Ferme la modale d'achat
+            hideModal(achatModal); 
         });
 
         // Gestion du formulaire de revente
@@ -403,12 +564,17 @@
             e.preventDefault();
             const objet = document.getElementById('objet-revente').value;
             const quantite = parseInt(document.getElementById('quantite-revente').value);
-            const prix = parseInt(document.getElementById('prix-revente').value); // Le prix est déjà le prix total
+            const prix = parseInt(document.getElementById('prix-revente').value); 
+
+            if (isNaN(prix) || prix < 0) {
+                alert('Veuillez saisir un prix valide.');
+                return;
+            }
 
             const nouvelleTransaction = {
                 objet,
                 quantite,
-                prix, // Le prix est stocké comme le prix total pour cette quantité
+                prix,
                 date: new Date().toISOString()
             };
 
@@ -418,7 +584,7 @@
 
             alert('Revente enregistrée !');
             formRevente.reset();
-            hideModal(reventeModal); // Ferme la modale de revente
+            hideModal(reventeModal); 
         });
 
         // Initialisation de l'application
