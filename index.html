@@ -34,15 +34,15 @@
         }
         
         .page-container {
-            max-width: 600px;
+            max-width: 600px; /* Conserver une largeur maximale pour le contenu principal */
             width: 100%;
-            padding: 20px;
+            padding: 0 20px; /* Ajuster le padding pour le nouveau design */
+            box-sizing: border-box;
             text-align: center;
         }
         
-        /* Conteneur pour le bouton et les sessions pour un meilleur flux */
         #accueil-view {
-            padding-top: 100px; /* Ajoute un espace pour le header fixe */
+            padding-top: 100px;
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -81,13 +81,14 @@
             transition: all 0.2s ease;
             text-decoration: none;
         }
-
-        /* MODIFICATION : Retrait de la position fixe */
+        
+        /* MODIFICATION : Le bouton prend la largeur complète du conteneur */
         .new-session-button {
-            width: 80%;
+            width: 100%;
             padding: 20px;
             font-size: 1.2em;
             margin-top: 20px;
+            margin-bottom: 20px;
         }
 
         .neuf-button:hover {
@@ -131,9 +132,10 @@
             margin-bottom: 0;
         }
         
-        /* MODIFICATION : Retrait de la position fixe */
+        /* MODIFICATION : Le cadre de session prend la largeur complète */
         .session-display-card {
-            width: 80%;
+            width: 100%;
+            box-sizing: border-box;
             margin-bottom: 20px;
             text-align: left;
         }
@@ -481,7 +483,7 @@
     <script>
         const ACHATS_KEY = 'dofusAchats';
         const REVENTES_KEY = 'dofusReventes';
-        const SESSIONS_KEY = 'dofusSessions'; // Nouvelle clé pour stocker les sessions
+        const SESSIONS_KEY = 'dofusSessions';
 
         const accueilView = document.getElementById('accueil-view');
         const recapView = document.getElementById('recap-view');
@@ -817,17 +819,15 @@
             const sessionName = sessionNameInput.value.trim();
 
             if (sessionName) {
-                // Stocke toutes les sessions dans un tableau
                 const sessions = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]');
                 sessions.push(sessionName);
                 localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
 
-                // Crée et affiche le nouveau cadre
                 createSessionCard(sessionName);
                 
                 hideModal(newSessionModal);
                 alert(`Nouvelle session "${sessionName}" démarrée !`);
-                sessionNameInput.value = ''; // Réinitialiser le champ
+                sessionNameInput.value = '';
             } else {
                 alert("Veuillez donner un nom à votre session de farm.");
             }
@@ -845,7 +845,6 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             loadDofusItems();
-            // Au chargement, recrée tous les cadres de session enregistrés
             const sessions = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]');
             sessions.forEach(sessionName => {
                 createSessionCard(sessionName);
