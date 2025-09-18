@@ -31,7 +31,7 @@
             align-items: center;
             flex-direction: column;
             min-height: 100vh;
-            /* REMPLACEMENT : Supprime le padding pour le header fixe */
+            /* REMPLACEMENT : Supprime le padding du body car le padding est géré par la page-container */
             padding-bottom: 70px; /* Ajoute un padding pour que le contenu ne soit pas caché par la nav bar */
         }
         
@@ -43,13 +43,10 @@
             text-align: center;
         }
 
-        /* AJOUT : Style spécifique pour le conteneur de la page d'accueil */
+        /* MODIFICATION : Le conteneur d'accueil a maintenant un padding en haut, et le bouton sera au top */
         #accueil-view {
-            padding-top: 120px; /* Espace pour ne pas que le bouton soit collé au header */
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
+            padding-top: 120px; /* Un padding suffisant pour laisser de l'espace sous le header */
+            display: block; /* Revenir à un affichage normal, le padding gère l'espacement */
         }
 
         /* Style pour le header de chaque page, maintenant fixe */
@@ -86,7 +83,6 @@
             text-decoration: none;
         }
 
-        /* AJOUT : Style pour un bouton plus grand */
         .big-button {
             width: 80%; /* Prend plus de place horizontalement */
             padding: 20px; /* Augmente la taille du padding */
@@ -495,7 +491,7 @@
             document.querySelectorAll('.modal-overlay').forEach(modal => modal.style.display = 'none');
             
             // Afficher la vue demandée
-            viewToShow.style.display = 'flex';
+            viewToShow.style.display = 'block';
 
             // Mettre à jour les résumés et listes si nécessaire
             if (viewToShow === recapView) {
