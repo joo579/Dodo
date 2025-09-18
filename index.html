@@ -40,7 +40,6 @@
             max-width: 600px;
             width: 100%;
             padding: 20px;
-            /* Pas de box-shadow ici pour le conteneur principal */
             text-align: center;
         }
 
@@ -50,6 +49,7 @@
             top: 0;
             left: 0;
             width: 100%;
+            box-sizing: border-box; /* **AJOUT DE CETTE LIGNE** */
             background-color: var(--dark-element);
             box-shadow: 0 8px 16px var(--dark-shadow);
             padding: 20px 30px;
