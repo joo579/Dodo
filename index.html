@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dofus Farm Tracker</title>
-    <!-- Font Awesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         /* CSS pour le design Neumorphism sombre */
@@ -306,22 +305,25 @@
 </head>
 <body>
 
-    <div class="container" id="main-view">
-        <h1>Mon Bilan Dofus Touch</h1>
+    <div class="container" id="accueil-view">
+        <h1>Tracker de Farm Dofus Touch</h1>
+        <button id="start-new-session" class="neuf-button">Nouvelle session de farm</button>
+    </div>
+
+    <div class="container" id="recap-view" style="display:none;">
+        <h1>Récapitulatif</h1>
         <div class="neuf-card">
-            <h2>Récapitulatif</h2>
+            <h2>Bilan</h2>
             <p>Total des achats : <span id="total-achats">0</span> Kamas</p>
             <p>Total des ventes : <span id="total-ventes">0</span> Kamas</p>
             <h3 id="benefice">Bénéfice : <span>0</span> Kamas</h3>
         </div>
-
         <nav>
             <button id="show-achat" class="neuf-button">Ajouter un achat</button>
             <button id="show-revente" class="neuf-button">Ajouter une revente</button>
         </nav>
     </div>
 
-    <!-- Nouvelle page pour l'historique -->
     <div class="container" id="historique-view" style="display:none;">
         <h1>Historique des transactions</h1>
         <div class="neuf-card">
@@ -330,7 +332,6 @@
     </div>
 
 
-    <!-- Modale pour ajouter un achat -->
     <div id="achat-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="close-button" id="close-achat-modal">&times;</button>
@@ -357,7 +358,6 @@
         </div>
     </div>
 
-    <!-- Modale pour ajouter une revente -->
     <div id="revente-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="close-button" id="close-revente-modal">&times;</button>
@@ -384,7 +384,6 @@
         </div>
     </div>
 
-    <!-- Modale pour le clavier numérique -->
     <div id="keypad-modal" class="modal-overlay keypad-modal">
         <div class="modal-content">
             <button class="close-button" id="close-keypad-modal">&times;</button>
@@ -406,22 +405,23 @@
                 <button class="keypad-button" data-value="8">8</button>
                 <button class="keypad-button" data-value="9">9</button>
 
-                <button class="keypad-button" data-value=".">,</button> <!-- Virgule -->
-                <button class="keypad-button" data-value="0">0</button>
-                <button class="keypad-button" data-action="backspace">&larr;</button> <!-- Retour arrière -->
-            </div>
+                <button class="keypad-button" data-value=".">,</button> <button class="keypad-button" data-value="0">0</button>
+                <button class="keypad-button" data-action="backspace">&larr;</button> </div>
             <button class="neuf-button" id="confirm-price">Confirmer</button>
         </div>
     </div>
 
-    <!-- Nouvelle barre de navigation du bas -->
     <nav class="bottom-nav">
         <button class="nav-button" id="nav-accueil">
             <i class="fas fa-home"></i>
             <span>Accueil</span>
         </button>
+        <button class="nav-button" id="nav-recap">
+            <i class="fas fa-chart-pie"></i>
+            <span>Récap..</span>
+        </button>
         <button class="nav-button" id="nav-historique">
-            <i class="fas fa-chart-line"></i>
+            <i class="fas fa-history"></i>
             <span>Historique</span>
         </button>
     </nav>
@@ -431,8 +431,9 @@
         const REVENTES_KEY = 'dofusReventes';
 
         // Vues de contenu
-        const mainView = document.getElementById('main-view');
-        const historiqueView = document.getElementById('historique-view'); // Nouvelle vue historique
+        const accueilView = document.getElementById('accueil-view');
+        const recapView = document.getElementById('recap-view');
+        const historiqueView = document.getElementById('historique-view');
 
         // Modales
         const achatModal = document.getElementById('achat-modal');
@@ -458,25 +459,30 @@
 
         // Boutons de la barre de navigation
         const navAccueilBtn = document.getElementById('nav-accueil');
+        const navRecapBtn = document.getElementById('nav-recap');
         const navHistoriqueBtn = document.getElementById('nav-historique');
+
+        // Bouton pour démarrer une nouvelle session
+        const startNewSessionBtn = document.getElementById('start-new-session');
 
         let currentKeypadValue = ''; 
         let activePriceInput = null;
 
-        // Toutes les vues de contenu et modales pour les cacher/afficher facilement
-        const allViews = [mainView, historiqueView, achatModal, reventeModal, keypadModal];
-        const contentViews = [mainView, historiqueView]; // Les vues qui ne sont pas des modales
+        // Vues de contenu (celles qui peuvent être affichées sur l'écran principal)
+        const contentViews = [accueilView, recapView, historiqueView];
 
         // Fonction générique pour afficher une vue de contenu et gérer les boutons de nav
         function showView(viewToShow, navButton = null) {
-            // Cacher toutes les vues de contenu et les modales
-            allViews.forEach(view => view.style.display = 'none');
+            // Cacher toutes les vues de contenu
+            contentViews.forEach(view => view.style.display = 'none');
+            // Cacher toutes les modales
+            document.querySelectorAll('.modal-overlay').forEach(modal => modal.style.display = 'none');
             
             // Afficher la vue demandée
             viewToShow.style.display = 'block';
 
             // Mettre à jour les résumés et listes si nécessaire
-            if (viewToShow === mainView) {
+            if (viewToShow === recapView) {
                 updateSummary();
             } else if (viewToShow === historiqueView) {
                 updateTransactionList();
@@ -489,14 +495,29 @@
             }
         }
 
-        // Fonctions pour gérer l'ouverture et la fermeture des modales (pas de changement majeur)
+        // Fonctions pour gérer l'ouverture et la fermeture des modales
         function showModal(modalElement) {
+            // Cacher les vues de contenu pour ne pas les superposer
+            contentViews.forEach(view => view.style.display = 'none');
             modalElement.style.display = 'flex';
         }
 
         function hideModal(modalElement) {
             modalElement.style.display = 'none';
-            // Pas de rafraîchissement de la vue principale ici, c'est showView qui s'en occupe
+            // Réafficher la vue de contenu active
+            const activeNavButton = document.querySelector('.nav-button.active');
+            if (activeNavButton) {
+                if (activeNavButton.id === 'nav-accueil') {
+                    showView(accueilView, navAccueilBtn);
+                } else if (activeNavButton.id === 'nav-recap') {
+                    showView(recapView, navRecapBtn);
+                } else if (activeNavButton.id === 'nav-historique') {
+                    showView(historiqueView, navHistoriqueBtn);
+                }
+            } else {
+                // Par défaut, retourner à la vue d'accueil si aucune n'est active
+                showView(accueilView, navAccueilBtn);
+            }
         }
 
         // --- Fonctions de mise à jour des données et de l'affichage ---
@@ -559,7 +580,7 @@
         }
         // --- Fin des fonctions de mise à jour ---
 
-        // --- Logique du clavier numérique --- (inchangée)
+        // --- Logique du clavier numérique ---
         function updateKeypadDisplay() {
             keypadValueDisplay.textContent = currentKeypadValue === '' ? '0' : currentKeypadValue.replace('.', ',');
         }
@@ -640,7 +661,7 @@
         });
         // --- Fin des événements des modales ---
 
-        // Chargement initial des objets Dofus Touch (inchangé)
+        // Chargement initial des objets Dofus Touch
         async function loadDofusItems() {
             try {
                 const response = await fetch('https://fr.touch.dofapi.fr/items');
@@ -686,8 +707,7 @@
             alert('Achat enregistré !');
             formAchat.reset();
             hideModal(achatModal); 
-            updateSummary(); // Mettre à jour le résumé sur la page d'accueil
-            updateTransactionList(); // Mettre à jour la liste sur la page historique
+            // Les mises à jour du récap et de l'historique se feront lors du retour à la vue
         });
 
         // Gestion du formulaire de revente
@@ -717,13 +737,16 @@
             alert('Revente enregistrée !');
             formRevente.reset();
             hideModal(reventeModal); 
-            updateSummary(); // Mettre à jour le résumé sur la page d'accueil
-            updateTransactionList(); // Mettre à jour la liste sur la page historique
+            // Les mises à jour du récap et de l'historique se feront lors du retour à la vue
         });
 
         // --- Logique de la barre de navigation du bas ---
         navAccueilBtn.addEventListener('click', () => {
-            showView(mainView, navAccueilBtn);
+            showView(accueilView, navAccueilBtn);
+        });
+
+        navRecapBtn.addEventListener('click', () => {
+            showView(recapView, navRecapBtn);
         });
 
         navHistoriqueBtn.addEventListener('click', () => {
@@ -731,10 +754,21 @@
         });
         // --- Fin Logique de la barre de navigation du bas ---
 
+        // Logique du bouton "Nouvelle session"
+        startNewSessionBtn.addEventListener('click', () => {
+            const confirmReset = confirm("Êtes-vous sûr de vouloir démarrer une nouvelle session ? Toutes les transactions actuelles seront effacées.");
+            if (confirmReset) {
+                localStorage.removeItem(ACHATS_KEY);
+                localStorage.removeItem(REVENTES_KEY);
+                alert("Nouvelle session démarrée ! Les données ont été effacées.");
+                showView(recapView, navRecapBtn);
+            }
+        });
+
         // Initialisation de l'application
         document.addEventListener('DOMContentLoaded', () => {
             loadDofusItems();
-            showView(mainView, navAccueilBtn); // Afficher la page d'accueil par défaut
+            showView(accueilView, navAccueilBtn); // Afficher la page d'accueil par défaut
         });
     </script>
 </body>
