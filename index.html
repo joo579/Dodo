@@ -44,10 +44,21 @@
             box-shadow: 8px 8px 16px var(--dark-shadow), -8px -8px 16px var(--light-shadow);
             text-align: center;
         }
-
-        h1 {
+        
+        /* Style pour le header de chaque page */
+        .page-header {
+            width: 100%;
+            background-color: var(--dark-element);
+            border-radius: 20px;
+            box-shadow: 8px 8px 16px var(--dark-shadow), -8px -8px 16px var(--light-shadow);
+            padding: 20px 30px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .page-header h1 {
+            margin: 0;
             font-weight: 600;
-            margin-bottom: 30px;
             text-shadow: 2px 2px 4px var(--dark-shadow), -2px -2px 4px var(--light-shadow);
         }
 
@@ -306,12 +317,16 @@
 <body>
 
     <div class="container" id="accueil-view">
-        <h1>Tracker de Farm Dofus Touch</h1>
+        <header class="page-header">
+            <h1>Accueil</h1>
+        </header>
         <button id="start-new-session" class="neuf-button">Nouvelle session de farm</button>
     </div>
 
     <div class="container" id="recap-view" style="display:none;">
-        <h1>Récapitulatif</h1>
+        <header class="page-header">
+            <h1>Récapitulatif</h1>
+        </header>
         <div class="neuf-card">
             <h2>Bilan</h2>
             <p>Total des achats : <span id="total-achats">0</span> Kamas</p>
@@ -325,7 +340,9 @@
     </div>
 
     <div class="container" id="historique-view" style="display:none;">
-        <h1>Historique des transactions</h1>
+        <header class="page-header">
+            <h1>Historique</h1>
+        </header>
         <div class="neuf-card">
             <ul id="transaction-list"></ul>
         </div>
