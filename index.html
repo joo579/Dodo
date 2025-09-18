@@ -27,9 +27,8 @@
             background-color: var(--dark-bg);
             color: var(--text-color);
             display: flex;
-            justify-content: center;
-            align-items: center;
             flex-direction: column;
+            align-items: center;
             min-height: 100vh;
             padding-bottom: 70px;
         }
@@ -40,14 +39,16 @@
             padding: 20px;
             text-align: center;
         }
-
+        
+        /* Conteneur pour le bouton et les sessions pour un meilleur flux */
         #accueil-view {
-            padding-top: 0;
-            display: block;
-            height: 100vh;
-            position: relative; 
+            padding-top: 100px; /* Ajoute un espace pour le header fixe */
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-
+        
         .page-header {
             position: fixed; 
             top: 0;
@@ -81,16 +82,12 @@
             text-decoration: none;
         }
 
-        /* Le bouton est maintenant plus petit et toujours visible en haut */
+        /* MODIFICATION : Retrait de la position fixe */
         .new-session-button {
             width: 80%;
             padding: 20px;
             font-size: 1.2em;
-            position: fixed; 
-            top: 150px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            margin: 0;
+            margin-top: 20px;
         }
 
         .neuf-button:hover {
@@ -134,13 +131,11 @@
             margin-bottom: 0;
         }
         
-        /* NOUVEAU : Positionnement du cadre de session en dessous du bouton */
+        /* MODIFICATION : Retrait de la position fixe */
         .session-display-card {
-            position: fixed;
-            top: 250px; /* Ajuste cette valeur pour la placer en dessous du bouton */
-            left: 50%;
-            transform: translateX(-50%);
             width: 80%;
+            margin-bottom: 20px;
+            text-align: left;
         }
 
         label {
@@ -351,13 +346,7 @@
 
     <div class="page-container" id="accueil-view">
         <button id="start-new-session" class="neuf-button new-session-button">Nouvelle session de farm</button>
-        <div id="session-display" class="neuf-card session-display-card" style="display:none;">
-            <div class="status-container">
-                <span class="status-dot"></span>
-                <span>En cours</span>
-            </div>
-            <h2 class="session-title" id="current-session-name"></h2>
-        </div>
+        <div id="session-list-container"></div>
     </div>
 
     <div class="page-container" id="recap-view" style="display:none;">
@@ -492,7 +481,7 @@
     <script>
         const ACHATS_KEY = 'dofusAchats';
         const REVENTES_KEY = 'dofusReventes';
-        const SESSION_NAME_KEY = 'dofusSessionName';
+        const SESSIONS_KEY = 'dofusSessions'; // Nouvelle clé pour stocker les sessions
 
         const accueilView = document.getElementById('accueil-view');
         const recapView = document.getElementById('recap-view');
@@ -526,8 +515,7 @@
         const startNewSessionBtn = document.getElementById('start-new-session');
         const formNewSession = document.getElementById('form-new-session');
         const sessionNameInput = document.getElementById('session-name');
-        const sessionDisplay = document.getElementById('session-display');
-        const currentSessionName = document.getElementById('current-session-name');
+        const sessionListContainer = document.getElementById('session-list-container');
 
         let currentKeypadValue = ''; 
         let activePriceInput = null;
@@ -542,8 +530,8 @@
             contentViews.forEach(view => view.style.display = 'none');
             document.querySelectorAll('.modal-overlay').forEach(modal => modal.style.display = 'none');
             
-            viewToShow.style.display = 'block';
-
+            viewToShow.style.display = 'flex';
+            
             if (viewToShow === recapView) {
                 updateSummary();
             } else if (viewToShow === historiqueView) {
@@ -562,20 +550,10 @@
             if (navButton) {
                 navButton.classList.add('active');
             }
-
-            const sessionIsActive = localStorage.getItem(SESSION_NAME_KEY) !== null;
-            if (viewToShow === accueilView) {
-                // Le bouton est toujours visible. Le cadre est visible si une session est en cours.
-                sessionDisplay.style.display = sessionIsActive ? 'block' : 'none';
-            } else {
-                sessionDisplay.style.display = 'none';
-            }
         }
 
         function showModal(modalElement) {
             contentViews.forEach(view => view.style.display = 'none');
-            document.getElementById('start-new-session').style.display = 'none';
-            document.getElementById('session-display').style.display = 'none';
             modalElement.style.display = 'flex';
         }
 
@@ -820,23 +798,36 @@
             showModal(newSessionModal);
         });
 
+        // Fonction pour créer et ajouter un cadre de session à la liste
+        function createSessionCard(sessionName) {
+            const card = document.createElement('div');
+            card.className = 'neuf-card session-display-card';
+            card.innerHTML = `
+                <div class="status-container">
+                    <span class="status-dot"></span>
+                    <span>En cours</span>
+                </div>
+                <h2 class="session-title">${sessionName}</h2>
+            `;
+            sessionListContainer.appendChild(card);
+        }
+
         formNewSession.addEventListener('submit', (e) => {
             e.preventDefault();
             const sessionName = sessionNameInput.value.trim();
 
             if (sessionName) {
-                const confirmReset = confirm("Démarrer une nouvelle session effacera toutes les transactions précédentes. Continuer ?");
-                if (confirmReset) {
-                    localStorage.removeItem(ACHATS_KEY);
-                    localStorage.removeItem(REVENTES_KEY);
-                    localStorage.setItem(SESSION_NAME_KEY, sessionName);
-                    
-                    currentSessionName.textContent = sessionName;
-                    hideModal(newSessionModal);
-                    // On ne masque plus le bouton, on affiche simplement le cadre en dessous
-                    sessionDisplay.style.display = 'block'; 
-                    alert(`Nouvelle session "${sessionName}" démarrée !`);
-                }
+                // Stocke toutes les sessions dans un tableau
+                const sessions = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]');
+                sessions.push(sessionName);
+                localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+
+                // Crée et affiche le nouveau cadre
+                createSessionCard(sessionName);
+                
+                hideModal(newSessionModal);
+                alert(`Nouvelle session "${sessionName}" démarrée !`);
+                sessionNameInput.value = ''; // Réinitialiser le champ
             } else {
                 alert("Veuillez donner un nom à votre session de farm.");
             }
@@ -854,10 +845,11 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             loadDofusItems();
-            const savedSessionName = localStorage.getItem(SESSION_NAME_KEY);
-            if (savedSessionName) {
-                currentSessionName.textContent = savedSessionName;
-            }
+            // Au chargement, recrée tous les cadres de session enregistrés
+            const sessions = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '[]');
+            sessions.forEach(sessionName => {
+                createSessionCard(sessionName);
+            });
             showView(accueilView, navAccueilBtn);
         });
     </script>
