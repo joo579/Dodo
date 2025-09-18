@@ -31,28 +31,29 @@
             align-items: center;
             flex-direction: column;
             min-height: 100vh;
-            padding: 20px;
+            padding-top: 100px; /* Ajout d'un padding en haut pour le header fixe */
             padding-bottom: 70px; /* Ajoute un padding pour que le contenu ne soit pas caché par la nav bar */
         }
-
-        .container {
+        
+        /* Styles pour les conteneurs de page */
+        .page-container {
             max-width: 600px;
             width: 100%;
-            padding: 30px;
-            background-color: var(--dark-element);
-            border-radius: 20px;
-            box-shadow: 8px 8px 16px var(--dark-shadow), -8px -8px 16px var(--light-shadow);
+            padding: 20px;
+            /* Pas de box-shadow ici pour le conteneur principal */
             text-align: center;
         }
-        
-        /* Style pour le header de chaque page */
+
+        /* Style pour le header de chaque page, maintenant fixe */
         .page-header {
+            position: fixed; /* Rend le header fixe */
+            top: 0;
+            left: 0;
             width: 100%;
             background-color: var(--dark-element);
-            border-radius: 20px;
-            box-shadow: 8px 8px 16px var(--dark-shadow), -8px -8px 16px var(--light-shadow);
+            box-shadow: 0 8px 16px var(--dark-shadow);
             padding: 20px 30px;
-            margin-bottom: 20px;
+            z-index: 100; /* Assure qu'il est au-dessus du contenu */
             text-align: center;
         }
         
@@ -97,14 +98,13 @@
             display: block;
             margin-bottom: 5px;
             font-weight: 600;
-            text-align: center; /* Centrer le texte des labels */
+            text-align: center;
         }
 
-        /* Styles spécifiques pour centrer et redimensionner les inputs et selects */
         input[list="dofus-items"],
         input[type="number"],
         select {
-            display: block; /* Important pour que margin: auto fonctionne */
+            display: block;
             margin-left: auto;
             margin-right: auto;
             padding: 12px;
@@ -114,26 +114,23 @@
             border: none;
             border-radius: 10px;
             box-shadow: inset 4px 4px 8px var(--dark-shadow), inset -4px -4px 8px var(--light-shadow);
-            appearance: none; /* Supprime le style natif du navigateur */
+            appearance: none;
             -webkit-appearance: none;
             -moz-appearance: none;
             font-family: inherit;
-            text-align: center; /* Centrer le texte dans les inputs et selects */
+            text-align: center;
         }
 
-        /* Largeur pour le nom de l'objet et le prix */
         input[list="dofus-items"],
         input[type="number"] {
-            width: 75%; /* Par exemple, ajustez si besoin */
+            width: 75%;
         }
 
-        /* Largeur pour la quantité (4 fois plus petit que 100%, donc 25%) */
         select#quantite-achat,
         select#quantite-revente {
             width: 25%;
-            line-height: 1.5; /* Ajustez si nécessaire pour un meilleur centrage */
+            line-height: 1.5;
         }
-        /* Fin des styles spécifiques */
 
         #transaction-list {
             list-style: none;
@@ -146,7 +143,7 @@
             border-radius: 10px;
             margin-bottom: 10px;
             box-shadow: 4px 4px 8px var(--dark-shadow), -4px -4px 8px var(--light-shadow);
-            text-align: left; /* Assure que le texte de la transaction reste aligné à gauche */
+            text-align: left;
         }
         
         .positive {
@@ -157,15 +154,15 @@
             color: var(--negative);
         }
 
-        /* Styles pour les modales générales */
+        /* Styles pour les modales */
         .modal-overlay {
-            display: none; /* Caché par défaut */
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6); /* Fond semi-transparent */
+            background-color: rgba(0, 0, 0, 0.6);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -178,7 +175,7 @@
             padding: 30px;
             max-width: 600px;
             width: 90%;
-            position: relative; /* Pour le bouton de fermeture */
+            position: relative;
             text-align: center;
         }
 
@@ -194,13 +191,8 @@
             line-height: 1;
         }
 
-        .close-button:hover {
-            color: var(--light-shadow);
-        }
-
-        /* Styles spécifiques pour le clavier numérique (Keypad Modal) */
         .keypad-modal .modal-content {
-            max-width: 400px; /* Plus petit pour le clavier */
+            max-width: 400px;
             padding: 20px;
         }
 
@@ -241,10 +233,6 @@
             flex-shrink: 0;
         }
 
-        .keypad-clear-display-button:hover {
-            box-shadow: inset 2px 2px 4px var(--dark-shadow), inset -2px -2px 4px var(--light-shadow);
-        }
-
         .keypad-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -265,28 +253,19 @@
             transition: all 0.2s ease;
         }
 
-        .keypad-button:hover {
-            box-shadow: inset 4px 4px 8px var(--keypad-button-shadow-dark), inset -4px -4px 8px var(--keypad-button-shadow-light);
-        }
-
-        .keypad-button:active {
-            box-shadow: inset 4px 4px 8px var(--keypad-button-shadow-dark), inset -4px -4px 8px var(--keypad-button-shadow-light);
-        }
-
-        /* Styles pour la barre de navigation du bas */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
             background-color: var(--dark-element);
-            box-shadow: 0 -8px 16px var(--dark-shadow), 0 8px 16px var(--light-shadow); /* Ombre sur le dessus */
+            box-shadow: 0 -8px 16px var(--dark-shadow), 0 8px 16px var(--light-shadow);
             display: flex;
             justify-content: space-around;
             padding: 10px 0;
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
-            z-index: 999; /* Assure qu'elle est au-dessus du contenu mais en dessous des modales */
+            z-index: 999;
         }
 
         .nav-button {
@@ -301,32 +280,30 @@
             font-size: 0.8em;
             cursor: pointer;
             transition: color 0.2s ease;
-            text-decoration: none; /* Enlève le soulignement si c'est un lien */
+            text-decoration: none;
         }
 
         .nav-button i {
-            font-size: 1.5em; /* Taille de l'icône */
+            font-size: 1.5em;
             margin-bottom: 5px;
         }
 
         .nav-button:hover, .nav-button.active {
-            color: var(--light-shadow); /* Couleur plus claire au survol et pour l'état actif */
+            color: var(--light-shadow);
         }
     </style>
 </head>
 <body>
 
-    <div class="container" id="accueil-view">
-        <header class="page-header">
-            <h1>Accueil</h1>
-        </header>
+    <header class="page-header" id="main-header">
+        <h1>Dofus Farm Tracker</h1>
+    </header>
+
+    <div class="page-container" id="accueil-view">
         <button id="start-new-session" class="neuf-button">Nouvelle session de farm</button>
     </div>
 
-    <div class="container" id="recap-view" style="display:none;">
-        <header class="page-header">
-            <h1>Récapitulatif</h1>
-        </header>
+    <div class="page-container" id="recap-view" style="display:none;">
         <div class="neuf-card">
             <h2>Bilan</h2>
             <p>Total des achats : <span id="total-achats">0</span> Kamas</p>
@@ -339,10 +316,7 @@
         </nav>
     </div>
 
-    <div class="container" id="historique-view" style="display:none;">
-        <header class="page-header">
-            <h1>Historique</h1>
-        </header>
+    <div class="page-container" id="historique-view" style="display:none;">
         <div class="neuf-card">
             <ul id="transaction-list"></ul>
         </div>
@@ -422,8 +396,10 @@
                 <button class="keypad-button" data-value="8">8</button>
                 <button class="keypad-button" data-value="9">9</button>
 
-                <button class="keypad-button" data-value=".">,</button> <button class="keypad-button" data-value="0">0</button>
-                <button class="keypad-button" data-action="backspace">&larr;</button> </div>
+                <button class="keypad-button" data-value=".">,</button>
+                <button class="keypad-button" data-value="0">0</button>
+                <button class="keypad-button" data-action="backspace">&larr;</button>
+            </div>
             <button class="neuf-button" id="confirm-price">Confirmer</button>
         </div>
     </div>
@@ -451,6 +427,7 @@
         const accueilView = document.getElementById('accueil-view');
         const recapView = document.getElementById('recap-view');
         const historiqueView = document.getElementById('historique-view');
+        const mainHeader = document.getElementById('main-header');
 
         // Modales
         const achatModal = document.getElementById('achat-modal');
@@ -487,6 +464,11 @@
 
         // Vues de contenu (celles qui peuvent être affichées sur l'écran principal)
         const contentViews = [accueilView, recapView, historiqueView];
+        
+        // Mettre à jour le titre du header en fonction de la page active
+        function updateHeaderTitle(title) {
+            mainHeader.querySelector('h1').textContent = title;
+        }
 
         // Fonction générique pour afficher une vue de contenu et gérer les boutons de nav
         function showView(viewToShow, navButton = null) {
@@ -503,6 +485,15 @@
                 updateSummary();
             } else if (viewToShow === historiqueView) {
                 updateTransactionList();
+            }
+            
+            // Mettre à jour le titre du header
+            if (viewToShow === accueilView) {
+                updateHeaderTitle('Accueil');
+            } else if (viewToShow === recapView) {
+                updateHeaderTitle('Récapitulatif');
+            } else if (viewToShow === historiqueView) {
+                updateHeaderTitle('Historique');
             }
 
             // Gérer la classe 'active' pour les boutons de navigation
