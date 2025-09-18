@@ -15,8 +15,8 @@
             --light-shadow: #424242;
             --dark-shadow: #161616;
             --text-color: #f0f0f0;
-            --positive: #4CAF50; /* Vert pour les bénéfices */
-            --negative: #F44336; /* Rouge pour les pertes */
+            --positive: #4CAF50;
+            --negative: #F44336;
             --keypad-button-bg: #3A3A3A;
             --keypad-button-shadow-light: #4c4c4c;
             --keypad-button-shadow-dark: #2c2c2c;
@@ -41,7 +41,6 @@
             text-align: center;
         }
 
-        /* La vue d'accueil ne nécessite plus de positionnement complexe */
         #accueil-view {
             padding-top: 0;
             display: block;
@@ -82,12 +81,12 @@
             text-decoration: none;
         }
 
-        /* MODIFICATION : Positionnement du bouton pour qu'il soit fixe comme le header */
-        .big-button {
+        /* Le bouton est maintenant plus petit et toujours visible en haut */
+        .new-session-button {
             width: 80%;
             padding: 20px;
             font-size: 1.2em;
-            position: fixed; /* Rendre le bouton fixe */
+            position: fixed; 
             top: 150px; 
             left: 50%; 
             transform: translateX(-50%); 
@@ -111,6 +110,39 @@
             text-align: left;
         }
 
+        .status-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .status-dot {
+            height: 12px;
+            width: 12px;
+            background-color: var(--positive);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .session-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 0;
+        }
+        
+        /* NOUVEAU : Positionnement du cadre de session en dessous du bouton */
+        .session-display-card {
+            position: fixed;
+            top: 250px; /* Ajuste cette valeur pour la placer en dessous du bouton */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+        }
+
         label {
             display: block;
             margin-bottom: 5px;
@@ -120,6 +152,7 @@
 
         input[list="dofus-items"],
         input[type="number"],
+        input[type="text"],
         select {
             display: block;
             margin-left: auto;
@@ -139,7 +172,8 @@
         }
 
         input[list="dofus-items"],
-        input[type="number"] {
+        input[type="number"],
+        input[type="text"] {
             width: 75%;
         }
 
@@ -316,7 +350,14 @@
     </header>
 
     <div class="page-container" id="accueil-view">
-        <button id="start-new-session" class="neuf-button big-button">Nouvelle session de farm</button>
+        <button id="start-new-session" class="neuf-button new-session-button">Nouvelle session de farm</button>
+        <div id="session-display" class="neuf-card session-display-card" style="display:none;">
+            <div class="status-container">
+                <span class="status-dot"></span>
+                <span>En cours</span>
+            </div>
+            <h2 class="session-title" id="current-session-name"></h2>
+        </div>
     </div>
 
     <div class="page-container" id="recap-view" style="display:none;">
@@ -337,7 +378,6 @@
             <ul id="transaction-list"></ul>
         </div>
     </div>
-
 
     <div id="achat-modal" class="modal-overlay">
         <div class="modal-content">
@@ -391,6 +431,20 @@
         </div>
     </div>
 
+    <div id="new-session-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-button" id="close-new-session-modal">&times;</button>
+            <h2>Nom de la session</h2>
+            <form id="form-new-session">
+                <div class="neuf-card">
+                    <label for="session-name">Nom du farm :</label>
+                    <input type="text" id="session-name" name="session-name" required>
+                </div>
+                <button type="submit" class="neuf-button">Valider</button>
+            </form>
+        </div>
+    </div>
+
     <div id="keypad-modal" class="modal-overlay keypad-modal">
         <div class="modal-content">
             <button class="close-button" id="close-keypad-modal">&times;</button>
@@ -438,6 +492,7 @@
     <script>
         const ACHATS_KEY = 'dofusAchats';
         const REVENTES_KEY = 'dofusReventes';
+        const SESSION_NAME_KEY = 'dofusSessionName';
 
         const accueilView = document.getElementById('accueil-view');
         const recapView = document.getElementById('recap-view');
@@ -447,6 +502,7 @@
         const achatModal = document.getElementById('achat-modal');
         const reventeModal = document.getElementById('revente-modal');
         const keypadModal = document.getElementById('keypad-modal');
+        const newSessionModal = document.getElementById('new-session-modal');
 
         const showAchatBtn = document.getElementById('show-achat');
         const showReventeBtn = document.getElementById('show-revente');
@@ -454,6 +510,7 @@
         const closeAchatModalBtn = document.getElementById('close-achat-modal');
         const closeReventeModalBtn = document.getElementById('close-revente-modal');
         const closeKeypadModalBtn = document.getElementById('close-keypad-modal');
+        const closeNewSessionModalBtn = document.getElementById('close-new-session-modal');
 
         const confirmPriceBtn = document.getElementById('confirm-price');
         const keypadClearDisplayBtn = document.getElementById('keypad-clear-display-btn');
@@ -467,6 +524,10 @@
         const navHistoriqueBtn = document.getElementById('nav-historique');
 
         const startNewSessionBtn = document.getElementById('start-new-session');
+        const formNewSession = document.getElementById('form-new-session');
+        const sessionNameInput = document.getElementById('session-name');
+        const sessionDisplay = document.getElementById('session-display');
+        const currentSessionName = document.getElementById('current-session-name');
 
         let currentKeypadValue = ''; 
         let activePriceInput = null;
@@ -501,10 +562,20 @@
             if (navButton) {
                 navButton.classList.add('active');
             }
+
+            const sessionIsActive = localStorage.getItem(SESSION_NAME_KEY) !== null;
+            if (viewToShow === accueilView) {
+                // Le bouton est toujours visible. Le cadre est visible si une session est en cours.
+                sessionDisplay.style.display = sessionIsActive ? 'block' : 'none';
+            } else {
+                sessionDisplay.style.display = 'none';
+            }
         }
 
         function showModal(modalElement) {
             contentViews.forEach(view => view.style.display = 'none');
+            document.getElementById('start-new-session').style.display = 'none';
+            document.getElementById('session-display').style.display = 'none';
             modalElement.style.display = 'flex';
         }
 
@@ -746,17 +817,47 @@
         });
 
         startNewSessionBtn.addEventListener('click', () => {
-            const confirmReset = confirm("Êtes-vous sûr de vouloir démarrer une nouvelle session ? Toutes les transactions actuelles seront effacées.");
-            if (confirmReset) {
-                localStorage.removeItem(ACHATS_KEY);
-                localStorage.removeItem(REVENTES_KEY);
-                alert("Nouvelle session démarrée ! Les données ont été effacées.");
-                showView(recapView, navRecapBtn);
+            showModal(newSessionModal);
+        });
+
+        formNewSession.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const sessionName = sessionNameInput.value.trim();
+
+            if (sessionName) {
+                const confirmReset = confirm("Démarrer une nouvelle session effacera toutes les transactions précédentes. Continuer ?");
+                if (confirmReset) {
+                    localStorage.removeItem(ACHATS_KEY);
+                    localStorage.removeItem(REVENTES_KEY);
+                    localStorage.setItem(SESSION_NAME_KEY, sessionName);
+                    
+                    currentSessionName.textContent = sessionName;
+                    hideModal(newSessionModal);
+                    // On ne masque plus le bouton, on affiche simplement le cadre en dessous
+                    sessionDisplay.style.display = 'block'; 
+                    alert(`Nouvelle session "${sessionName}" démarrée !`);
+                }
+            } else {
+                alert("Veuillez donner un nom à votre session de farm.");
+            }
+        });
+
+        closeNewSessionModalBtn.addEventListener('click', () => {
+            hideModal(newSessionModal);
+        });
+
+        newSessionModal.addEventListener('click', (e) => {
+            if (e.target === newSessionModal) { 
+                hideModal(newSessionModal); 
             }
         });
 
         document.addEventListener('DOMContentLoaded', () => {
             loadDofusItems();
+            const savedSessionName = localStorage.getItem(SESSION_NAME_KEY);
+            if (savedSessionName) {
+                currentSessionName.textContent = savedSessionName;
+            }
             showView(accueilView, navAccueilBtn);
         });
     </script>
