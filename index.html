@@ -41,9 +41,9 @@
             text-align: center;
         }
 
-        /* MODIFICATION : Le conteneur d'accueil est maintenant le parent de référence pour le bouton */
+        /* La vue d'accueil ne nécessite plus de positionnement complexe */
         #accueil-view {
-            padding-top: 0; 
+            padding-top: 0;
             display: block;
             height: 100vh;
             position: relative; 
@@ -82,12 +82,12 @@
             text-decoration: none;
         }
 
-        /* MODIFICATION : Positionnement du bouton */
+        /* MODIFICATION : Positionnement du bouton pour qu'il soit fixe comme le header */
         .big-button {
             width: 80%;
             padding: 20px;
             font-size: 1.2em;
-            position: absolute;
+            position: fixed; /* Rendre le bouton fixe */
             top: 150px; 
             left: 50%; 
             transform: translateX(-50%); 
@@ -439,27 +439,22 @@
         const ACHATS_KEY = 'dofusAchats';
         const REVENTES_KEY = 'dofusReventes';
 
-        // Vues de contenu
         const accueilView = document.getElementById('accueil-view');
         const recapView = document.getElementById('recap-view');
         const historiqueView = document.getElementById('historique-view');
         const mainHeader = document.getElementById('main-header');
 
-        // Modales
         const achatModal = document.getElementById('achat-modal');
         const reventeModal = document.getElementById('revente-modal');
         const keypadModal = document.getElementById('keypad-modal');
 
-        // Boutons de déclenchement des modales
         const showAchatBtn = document.getElementById('show-achat');
         const showReventeBtn = document.getElementById('show-revente');
 
-        // Boutons de fermeture des modales
         const closeAchatModalBtn = document.getElementById('close-achat-modal');
         const closeReventeModalBtn = document.getElementById('close-revente-modal');
         const closeKeypadModalBtn = document.getElementById('close-keypad-modal');
 
-        // Éléments du clavier numérique
         const confirmPriceBtn = document.getElementById('confirm-price');
         const keypadClearDisplayBtn = document.getElementById('keypad-clear-display-btn');
         const prixAchatInput = document.getElementById('prix-achat');
@@ -467,26 +462,21 @@
         const keypadValueDisplay = document.getElementById('keypad-value-display');
         const keypadButtons = document.querySelectorAll('.keypad-grid .keypad-button'); 
 
-        // Boutons de la barre de navigation
         const navAccueilBtn = document.getElementById('nav-accueil');
         const navRecapBtn = document.getElementById('nav-recap');
         const navHistoriqueBtn = document.getElementById('nav-historique');
 
-        // Bouton pour démarrer une nouvelle session
         const startNewSessionBtn = document.getElementById('start-new-session');
 
         let currentKeypadValue = ''; 
         let activePriceInput = null;
 
-        // Vues de contenu (celles qui peuvent être affichées sur l'écran principal)
         const contentViews = [accueilView, recapView, historiqueView];
         
-        // Mettre à jour le titre du header en fonction de la page active
         function updateHeaderTitle(title) {
             mainHeader.querySelector('h1').textContent = title;
         }
 
-        // Fonction générique pour afficher une vue de contenu et gérer les boutons de nav
         function showView(viewToShow, navButton = null) {
             contentViews.forEach(view => view.style.display = 'none');
             document.querySelectorAll('.modal-overlay').forEach(modal => modal.style.display = 'none');
