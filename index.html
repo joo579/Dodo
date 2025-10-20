@@ -42,7 +42,7 @@
         }
         
         #accueil-view {
-            padding-top: 100px;
+            padding-top: 100px; /* Augmenté pour laisser de la place au header + bouton */
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -61,15 +61,29 @@
             box-sizing: border-box; 
             background-color: var(--dark-element);
             box-shadow: 0 8px 16px var(--dark-shadow);
-            padding: 20px 30px;
+            padding: 10px 0; /* Ajuste le padding du header */
             z-index: 100;
-            text-align: center;
+            display: flex; /* Utilise flexbox pour centrer le contenu */
+            justify-content: center; /* Centre le wrapper à l'intérieur */
+        }
+
+        /* NOUVEAU : Wrapper pour le titre et le bouton dans le header */
+        .header-content-wrapper {
+            max-width: 600px; /* Aligne avec le contenu principal */
+            width: 100%;
+            display: flex;
+            justify-content: space-between; /* Pousse titre et bouton aux extrémités */
+            align-items: center;
+            padding: 0 10px; /* Adapte le padding aux côtés du header */
+            box-sizing: border-box;
         }
         
         .page-header h1 {
             margin: 0;
             font-weight: 600;
             text-shadow: 2px 2px 4px var(--dark-shadow), -2px -2px 4px var(--light-shadow);
+            text-align: center; /* Centre le texte du titre */
+            flex-grow: 1; /* Permet au titre de prendre l'espace disponible */
         }
 
         .neuf-button {
@@ -86,7 +100,7 @@
             text-decoration: none;
         }
         
-        /* MODIFICATION : Le bouton "Nouvelle session" */
+        /* MODIFICATION : Le bouton "Nouvelle session" (maintenant seulement pour les styles de base) */
         .new-session-button {
             width: 100%; /* Prend 100% de la largeur du #accueil-view (qui a maintenant un padding) */
             padding: 20px;
@@ -97,6 +111,20 @@
             margin-left: 0;
             margin-right: 0;
             box-sizing: border-box; /* Important pour que width: 100% inclue padding et border */
+            display: none; /* Cache l'ancien bouton, on utilise celui du header */
+        }
+
+        /* NOUVEAU : Style pour le bouton "NEW Farm" dans le header */
+        .header-new-session-button {
+            padding: 8px 15px; /* Padding plus petit pour le header */
+            font-size: 0.9em;
+            margin: 0; /* Pas de marge par défaut */
+            display: flex; /* Pour aligner l'icône et le texte */
+            align-items: center;
+            gap: 5px; /* Espace entre l'icône et le texte */
+        }
+        .header-new-session-button i {
+            font-size: 1.1em; /* Taille de l'icône */
         }
 
         .neuf-button:hover {
@@ -118,11 +146,13 @@
 
         /* MODIFICATION POUR LE STATUT ET LE ROND */
         .status-container {
+            position: absolute; /* Positionnement absolu */
+            top: 10px; /* Ajuste la position verticale */
+            left: 15px; /* Ajuste la position horizontale */
             display: flex;
             align-items: center;
-            justify-content: flex-start;
-            margin-bottom: 5px; /* Réduit un peu la marge pour le rapprocher du titre */
             font-size: 0.7em; /* Rend le texte "En cours" plus petit */
+            z-index: 1; /* Assure qu'il est au-dessus du titre si besoin */
         }
 
         .status-dot {
@@ -139,7 +169,7 @@
             font-size: 1.5em;
             font-weight: 600;
             text-align: center;
-            margin-top: 0; /* Supprime la marge supérieure */
+            margin-top: 25px; /* Pour laisser de la place au statut absolument positionné */
             margin-bottom: 10px; /* Ajoute une petite marge en bas du titre */
         }
         
@@ -152,6 +182,7 @@
             /* Supprimer les marges horizontales car le padding d'un ancêtre (#accueil-view) gère l'espacement */
             margin-left: 0;
             margin-right: 0;
+            position: relative; /* NOUVEAU: Pour positionner absolument le statut */
         }
 
         /* AJOUT : Assurer que le conteneur des sessions est bien aligné */
@@ -365,11 +396,16 @@
 <body>
 
     <header class="page-header" id="main-header">
-        <h1>Dofus Farm Tracker</h1>
+        <div class="header-content-wrapper">
+            <h1>Dofus Farm Tracker</h1>
+            <button id="start-new-session" class="neuf-button header-new-session-button">
+                <i class="fas fa-plus"></i> NEW Farm
+            </button>
+        </div>
     </header>
 
     <div class="page-container" id="accueil-view">
-        <button id="start-new-session" class="neuf-button new-session-button">Nouvelle session de farm</button>
+        <!-- L'ancien bouton "Nouvelle session de farm" est maintenant déplacé dans le header et stylisé -->
         <div id="session-list-container"></div>
     </div>
 
@@ -536,7 +572,7 @@
         const navRecapBtn = document.getElementById('nav-recap');
         const navHistoriqueBtn = document.getElementById('nav-historique');
 
-        const startNewSessionBtn = document.getElementById('start-new-session');
+        const startNewSessionBtn = document.getElementById('start-new-session'); // Ce bouton est maintenant dans le header
         const formNewSession = document.getElementById('form-new-session');
         const sessionNameInput = document.getElementById('session-name');
         const sessionListContainer = document.getElementById('session-list-container');
@@ -562,13 +598,8 @@
                 updateTransactionList();
             }
             
-            if (viewToShow === accueilView) {
-                updateHeaderTitle('Accueil');
-            } else if (viewToShow === recapView) {
-                updateHeaderTitle('Récapitulatif');
-            } else if (viewToShow === historiqueView) {
-                updateHeaderTitle('Historique');
-            }
+            // Le titre du header est mis à jour séparément par la structure du header
+            // updateHeaderTitle('...'); 
 
             document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
             if (navButton) {
@@ -826,13 +857,12 @@
         function createSessionCard(sessionName) {
             const card = document.createElement('div');
             card.className = 'neuf-card session-display-card';
-            // Le statut est maintenant en haut à gauche, le titre centré en dessous
             card.innerHTML = `
-                <h2 class="session-title">${sessionName}</h2>
                 <div class="status-container">
                     <span class="status-dot"></span>
                     <span>En cours</span>
                 </div>
+                <h2 class="session-title">${sessionName}</h2>
             `;
             sessionListContainer.appendChild(card);
         }
