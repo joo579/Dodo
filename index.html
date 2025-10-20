@@ -42,7 +42,7 @@
         }
         
         #accueil-view {
-            padding-top: 90px; /* MODIFICATION : Ajuste le padding pour éviter le chevauchement avec le header et ajouter un espace */
+            padding-top: 64px; /* MODIFICATION : Ajuste le padding pour éviter le chevauchement et un espacement de 20px */
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -159,10 +159,10 @@
         }
 
         .session-title {
-            font-size: 1.5em;
+            font-size: 1.1em; /* MODIFICATION : Deux tailles de police en dessous */
             font-weight: 600;
             text-align: center;
-            margin-top: 0; /* MODIFICATION : Place le titre tout en haut du cadre, compte tenu du padding du neuf-card */
+            margin-top: 0; /* Place le titre tout en haut du cadre, compte tenu du padding du neuf-card */
             margin-bottom: 10px; /* Ajoute une petite marge en bas du titre */
         }
         
@@ -173,7 +173,9 @@
             text-align: left;
             margin-left: 0;
             margin-right: 0;
-            position: relative; /* NOUVEAU: Pour positionner absolument le statut */
+            position: relative; /* Pour positionner absolument le statut */
+            padding-top: 15px;   /* MODIFICATION : Réduit le padding supérieur */
+            padding-bottom: 15px; /* MODIFICATION : Réduit le padding inférieur pour équilibrer */
         }
 
         #session-list-container {
