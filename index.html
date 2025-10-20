@@ -116,28 +116,31 @@
             text-align: left;
         }
 
+        /* MODIFICATION POUR LE STATUT ET LE ROND */
         .status-container {
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            margin-bottom: 10px;
+            margin-bottom: 5px; /* Réduit un peu la marge pour le rapprocher du titre */
+            font-size: 0.7em; /* Rend le texte "En cours" plus petit */
         }
 
         .status-dot {
-            height: 12px;
-            width: 12px;
+            height: 6px; /* Deux fois plus petit */
+            width: 6px; /* Deux fois plus petit */
             background-color: var(--positive);
             border-radius: 50%;
             display: inline-block;
-            margin-right: 8px;
+            margin-right: 4px; /* Ajuste la marge */
         }
 
+        /* MODIFICATION POUR LE TITRE DE SESSION */
         .session-title {
             font-size: 1.5em;
             font-weight: 600;
             text-align: center;
-            margin-top: 10px;
-            margin-bottom: 0;
+            margin-top: 0; /* Supprime la marge supérieure */
+            margin-bottom: 10px; /* Ajoute une petite marge en bas du titre */
         }
         
         /* MODIFICATION : Les cadres de session */
@@ -823,12 +826,13 @@
         function createSessionCard(sessionName) {
             const card = document.createElement('div');
             card.className = 'neuf-card session-display-card';
+            // Le statut est maintenant en haut à gauche, le titre centré en dessous
             card.innerHTML = `
+                <h2 class="session-title">${sessionName}</h2>
                 <div class="status-container">
                     <span class="status-dot"></span>
                     <span>En cours</span>
                 </div>
-                <h2 class="session-title">${sessionName}</h2>
             `;
             sessionListContainer.appendChild(card);
         }
