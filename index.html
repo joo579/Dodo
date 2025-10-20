@@ -151,6 +151,14 @@
             margin-right: 0;
         }
 
+        /* AJOUT : Assurer que le conteneur des sessions est bien aligné */
+        #session-list-container {
+            width: 100%; /* S'assure qu'il prend toute la largeur de son parent */
+            margin: 0; /* Supprime toute marge par défaut du navigateur */
+            padding: 0; /* Supprime tout padding par défaut du navigateur */
+            box-sizing: border-box; /* Assure une gestion cohérente de la boîte */
+        }
+
         label {
             display: block;
             margin-bottom: 5px;
