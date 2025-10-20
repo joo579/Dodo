@@ -42,7 +42,7 @@
         }
         
         #accueil-view {
-            padding-top: 64px; /* MODIFICATION : Ajuste le padding pour éviter le chevauchement et un espacement de 20px */
+            padding-top: 64px; /* MODIFICATION CLÉ : Hauteur du header (environ 44px) + 20px d'espacement désiré */
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -133,7 +133,7 @@
         .neuf-card {
             background-color: var(--dark-element);
             border-radius: 15px;
-            padding: 20px;
+            padding: 20px; /* Padding générique pour les cartes */
             margin-bottom: 20px; /* Espacement entre les cartes */
             box-shadow: inset 4px 4px 8px var(--dark-shadow), inset -4px -4px 8px var(--light-shadow);
             text-align: left;
@@ -159,10 +159,10 @@
         }
 
         .session-title {
-            font-size: 1.1em; /* MODIFICATION : Deux tailles de police en dessous */
+            font-size: 1.1em; /* Deux tailles de police en dessous */
             font-weight: 600;
             text-align: center;
-            margin-top: 0; /* Place le titre tout en haut du cadre, compte tenu du padding du neuf-card */
+            margin-top: 0; /* Assure que le titre est bien en haut du cadre, le padding du parent gère l'espace */
             margin-bottom: 10px; /* Ajoute une petite marge en bas du titre */
         }
         
@@ -174,8 +174,7 @@
             margin-left: 0;
             margin-right: 0;
             position: relative; /* Pour positionner absolument le statut */
-            padding-top: 15px;   /* MODIFICATION : Réduit le padding supérieur */
-            padding-bottom: 15px; /* MODIFICATION : Réduit le padding inférieur pour équilibrer */
+            padding: 10px 20px 15px 20px; /* MODIFICATION CLÉ : Padding ajusté pour un titre plus haut */
         }
 
         #session-list-container {
