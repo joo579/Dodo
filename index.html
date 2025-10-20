@@ -42,12 +42,11 @@
         }
         
         #accueil-view {
-            padding-top: 100px; /* Augmenté pour laisser de la place au header + bouton */
+            padding-top: 70px; /* MODIFICATION : Ajuste le padding pour aligner sous le header */
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* MODIFICATION CLÉ : Ajouter un padding horizontal ici pour gérer l'espacement */
             padding-left: 10px;
             padding-right: 10px;
             box-sizing: border-box; /* S'assurer que le padding est inclus dans la largeur */
@@ -67,7 +66,6 @@
             justify-content: center; /* Centre le wrapper à l'intérieur */
         }
 
-        /* NOUVEAU : Wrapper pour le titre et le bouton dans le header */
         .header-content-wrapper {
             max-width: 600px; /* Aligne avec le contenu principal */
             width: 100%;
@@ -100,21 +98,18 @@
             text-decoration: none;
         }
         
-        /* MODIFICATION : Le bouton "Nouvelle session" (maintenant seulement pour les styles de base) */
         .new-session-button {
-            width: 100%; /* Prend 100% de la largeur du #accueil-view (qui a maintenant un padding) */
+            width: 100%;
             padding: 20px;
             font-size: 1.2em;
             margin-top: 20px;
             margin-bottom: 20px;
-            /* Supprimer les marges horizontales car le padding du parent #accueil-view gère l'espacement */
             margin-left: 0;
             margin-right: 0;
-            box-sizing: border-box; /* Important pour que width: 100% inclue padding et border */
+            box-sizing: border-box;
             display: none; /* Cache l'ancien bouton, on utilise celui du header */
         }
 
-        /* NOUVEAU : Style pour le bouton "NEW Farm" dans le header */
         .header-new-session-button {
             padding: 8px 15px; /* Padding plus petit pour le header */
             font-size: 0.9em;
@@ -144,7 +139,6 @@
             text-align: left;
         }
 
-        /* MODIFICATION POUR LE STATUT ET LE ROND */
         .status-container {
             position: absolute; /* Positionnement absolu */
             top: 10px; /* Ajuste la position verticale */
@@ -164,7 +158,6 @@
             margin-right: 4px; /* Ajuste la marge */
         }
 
-        /* MODIFICATION POUR LE TITRE DE SESSION */
         .session-title {
             font-size: 1.5em;
             font-weight: 600;
@@ -173,19 +166,16 @@
             margin-bottom: 10px; /* Ajoute une petite marge en bas du titre */
         }
         
-        /* MODIFICATION : Les cadres de session */
         .session-display-card {
             width: 100%; /* Prend 100% de la largeur de son parent #session-list-container */
             box-sizing: border-box; /* Important pour que width: 100% inclue padding et border */
             margin-bottom: 20px;
             text-align: left;
-            /* Supprimer les marges horizontales car le padding d'un ancêtre (#accueil-view) gère l'espacement */
             margin-left: 0;
             margin-right: 0;
             position: relative; /* NOUVEAU: Pour positionner absolument le statut */
         }
 
-        /* AJOUT : Assurer que le conteneur des sessions est bien aligné */
         #session-list-container {
             width: 100%; /* S'assure qu'il prend toute la largeur de son parent */
             margin: 0; /* Supprime toute marge par défaut du navigateur */
@@ -397,7 +387,7 @@
 
     <header class="page-header" id="main-header">
         <div class="header-content-wrapper">
-            <h1>Dofus Farm Tracker</h1>
+            <h1>Dofus Touch</h1> <!-- MODIFICATION : Titre par défaut -->
             <button id="start-new-session" class="neuf-button header-new-session-button">
                 <i class="fas fa-plus"></i> NEW Farm
             </button>
@@ -405,7 +395,6 @@
     </header>
 
     <div class="page-container" id="accueil-view">
-        <!-- L'ancien bouton "Nouvelle session de farm" est maintenant déplacé dans le header et stylisé -->
         <div id="session-list-container"></div>
     </div>
 
@@ -592,14 +581,16 @@
             
             viewToShow.style.display = 'flex';
             
-            if (viewToShow === recapView) {
+            // MODIFICATION : Mise à jour du titre du header en fonction de la vue
+            if (viewToShow === accueilView) {
+                updateHeaderTitle('Dofus Touch');
+            } else if (viewToShow === recapView) {
+                updateHeaderTitle('Récapitulatif');
                 updateSummary();
             } else if (viewToShow === historiqueView) {
+                updateHeaderTitle('Historique');
                 updateTransactionList();
             }
-            
-            // Le titre du header est mis à jour séparément par la structure du header
-            // updateHeaderTitle('...'); 
 
             document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
             if (navButton) {
@@ -902,7 +893,7 @@
             sessions.forEach(sessionName => {
                 createSessionCard(sessionName);
             });
-            showView(accueilView, navAccueilBtn);
+            showView(accueilView, navAccueilBtn); // S'assure que le titre et la vue Accueil sont affichés au chargement
         });
     </script>
 </body>
